@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html>
     <head>
         <meta charset="UTF-8">
@@ -15,35 +14,109 @@
     </head>
     <body>
         {% block body %}
-        <h1>Résultats d'analyse de la course</h1>
-        <p>Lap 1 is ignored.</p>
-        <table>
-            <thead>
-                <tr>
-                    <th>Position <span id='position-sort-up'>&#8593; </span><span id='position-sort-down'>&#8595;</span></th>
-                    <th>Driver</th>
-                    <th>Laps</th>
-                    <th>Race consistency <span id='consistency-sort-up'>&#8593; </span><span id='consistency-sort-down'>&#8595;</span></th>
-            </thead>
-            <tbody>
-                {% for key, result in data %}
-                <tr data-consistency="{{result.consistency}}" data-position="{{key}}">
-                    <td>{{key}}</td>
-                    <td>{{result.driver}}</td>
-                    <td>{{result.laps}}</td>
-                    {% if result.consistency %}
-                    <td>{{result.consistency|number_format(2, '.')}} %</td>
-                    {% else %}
-                    <td>-</td>
-                    {% endif %}
-                {% endfor %}
-            </tbody>
-        </table>
-        <ul>
-            <li><a href="{{ path('download_file_json', {'data': data}) }}" target='_blank'>Download data as JSON</a></li>
-            <li><a href="{{ path('download_file_csv', {'data': data}) }}" target='_blank'>Download data as CSV</a></li>
-            <li><a href="{{ path('app_home')}}">Retour à l'accueil</a></li>
-        </ul>
+        <h1>Résultats d'analyse (qualification et course)</h1>
+
+        <section class='results'>
+            <div class='result-quali'>
+                <h2>Qualification</h2>
+
+                <table class='result-quali'>
+                    <thead>
+                        <tr>
+                            <th>Position <span id='position-sort-up'>&#8593; </span><span id='position-sort-down'>&#8595;</span></th>
+                            <th>Driver</th>
+                            <th>Qualification gap</th>
+                    </thead>
+                    <tbody>
+                        {% for key, result in dataQuali %}
+                        <tr data-position="{{key}}">
+                            <td>{{key}}</td>
+                            <td>{{result.driver}}</td>
+                            {% if result.gap %}
+                            <td>{{result.gap|number_format(2, '.')}} %</td>
+                            {% else %}
+                            <td>-</td>
+                            {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <ul class='download-data'>
+                    <li><a href="{{ path('download_file_json', {'data': dataQuali}) }}" target='_blank'>Download data as JSON</a></li>
+                    <li><a href="{{ path('download_file_csv', {'data': dataQuali}) }}" target='_blank'>Download data as CSV</a></li>
+                    <li><a href="{{ path('app_home')}}">Retour à l'accueil</a></li>
+                </ul>
+            </div>
+
+            <div class='result-race'>
+                <h2>Race</h2>
+
+                <p>Lap 1 is ignored.</p>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Position <span id='position-sort-up'>&#8593; </span><span id='position-sort-down'>&#8595;</span></th>
+                            <th>Driver</th>
+                            <th>Laps</th>
+                            <th>Race consistency <span id='consistency-sort-up'>&#8593; </span><span id='consistency-sort-down'>&#8595;</span></th>
+                    </thead>
+                    <tbody>
+                        {% for key, result in dataRace %}
+                        <tr data-consistency="{{result.consistency}}" data-position="{{key}}">
+                            <td>{{key}}</td>
+                            <td>{{result.driver}}</td>
+                            <td>{{result.laps}}</td>
+                            {% if result.consistency %}
+                            <td>{{result.consistency|number_format(2, '.')}} %</td>
+                            {% else %}
+                            <td>-</td>
+                            {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <ul>
+                    <li><a href="{{ path('download_file_json', {'data': dataRace}) }}" target='_blank'>Download data as JSON</a></li>
+                    <li><a href="{{ path('download_file_csv', {'data': dataRace}) }}" target='_blank'>Download data as CSV</a></li>
+                    <li><a href="{{ path('app_home')}}">Retour à l'accueil</a></li>
+                </ul> 
+            </div>
+
+            {% if dataRace2 %}
+            <div class='result-race'>
+                <h2>Race 2</h2>
+
+                <p>Lap 1 is ignored.</p>
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Position <span id='position-sort-up'>&#8593; </span><span id='position-sort-down'>&#8595;</span></th>
+                            <th>Driver</th>
+                            <th>Laps</th>
+                            <th>Race consistency <span id='consistency-sort-up'>&#8593; </span><span id='consistency-sort-down'>&#8595;</span></th>
+                    </thead>
+                    <tbody>
+                        {% for key, result in dataRace2 %}
+                        <tr data-consistency="{{result.consistency}}" data-position="{{key}}">
+                            <td>{{key}}</td>
+                            <td>{{result.driver}}</td>
+                            <td>{{result.laps}}</td>
+                            {% if result.consistency %}
+                            <td>{{result.consistency|number_format(2, '.')}} %</td>
+                            {% else %}
+                            <td>-</td>
+                            {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <ul>
+                    <li><a href="{{ path('download_file_json', {'data': dataRace2}) }}" target='_blank'>Download data as JSON</a></li>
+                    <li><a href="{{ path('download_file_csv', {'data': dataRace2}) }}" target='_blank'>Download data as CSV</a></li>
+                    <li><a href="{{ path('app_home')}}">Retour à l'accueil</a></li>
+                </ul> 
+            </div>
+            {% endif %}
+        </section>
         {% endblock %}
     </body>
 </html>

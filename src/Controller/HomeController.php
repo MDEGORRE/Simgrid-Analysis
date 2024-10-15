@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Form\Type\QualificationAndRace;
 use App\Form\Type\QualificationGap;
 use App\Form\Type\RaceConsistency;
 use Symfony\Component\Process\Process;
@@ -49,8 +50,50 @@ class HomeController extends AbstractController
                 }
             $data = json_decode($process->getOutput(), true);
 
-            return $this->render('result.html.twig', [
+            return $this->render('result-race.html.twig', [
                 'data' => $data,
+            ]);
+        }
+
+        $formForQualiAndRace = $this->createForm(QualificationAndRace::class);
+        $formForQualiAndRace->handleRequest($request);
+        if ($formForQualiAndRace->isSubmitted() && $formForQualiAndRace->isValid()) {
+            $url = $formForQualiAndRace->getData()['url'];
+            $race_id = explode('=', $url)[1];
+            $championship_id = explode('/', $url)[4];
+
+            $processQuali = new Process(["/usr/bin/python3", "../Simgrid-Qualification-Times-Gap-in-Percent/simgrid-quali-gap.py", 
+            'argument' => 'https://www.thesimgrid.com/championships/' . $championship_id . '/results?overall=true&race_id=' . $race_id . '&session_type=qualifying']);
+            $processQuali->run();
+            if (!$processQuali->isSuccessful()) {
+                throw new ProcessFailedException($processQuali);
+                }
+            $dataQuali = json_decode($processQuali->getOutput(), true);
+
+            $processRace = new Process(["/usr/bin/python3", "../Simgrid-Race-Consistency/simgrid-race-consistency.py", 
+            'argument' => 'https://www.thesimgrid.com/championships/' . $championship_id . '/results?overall=true&race_id=' . $race_id . '&result_type=laps&session_type=race_1']);
+            $processRace->run();
+            if (!$processRace->isSuccessful()) {
+                throw new ProcessFailedException($processRace);
+                }
+            $dataRace = json_decode($processRace->getOutput(), true);
+
+            // check if a race 2 exists
+            $processRace2 = new Process(["/usr/bin/python3", "../Simgrid-Race-Consistency/simgrid-race-consistency.py", 
+            'argument' => 'https://www.thesimgrid.com/championships/' . $championship_id . '/results?overall=true&race_id=' . $race_id . '&result_type=laps&session_type=race_2']);
+            $processRace2->run();
+            if (!$processRace2->isSuccessful()) {
+                return $this->render('result.html.twig', [
+                    'dataQuali' => $dataQuali,
+                    'dataRace' => $dataRace
+                ]);
+            }
+            $dataRace2 = json_decode($processRace2->getOutput(), true);
+
+            return $this->render('result.html.twig', [
+                'dataQuali' => $dataQuali,
+                'dataRace' => $dataRace,
+                'dataRace2' => $dataRace2
             ]);
         }
 
@@ -58,6 +101,7 @@ class HomeController extends AbstractController
             'controller_name' => 'HomeController',
             'formForQualiGap' => $formForQualiGap,
             'formForRaceConsistency' => $formForRaceConsistency,
+            'formForQualiAndRace' => $formForQualiAndRace
         ]);
 
     }

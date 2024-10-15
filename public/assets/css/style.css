@@ -5,6 +5,13 @@ h1 {
     margin: 1rem 0;
 }
 
+h2 {
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 500;
+    margin: 1rem 0;
+}
+
 p {
     text-align: center;
     font-style: italic;
@@ -33,4 +40,16 @@ ul {
 
 li {
     margin: 0.5rem 0;
+}
+
+@media screen and (width>1024px) {
+    .results {
+        display: flex;
+        justify-content: center;
+        gap:2rem;
+    }
+
+    .result-race > p {
+        display: none;
+    }
 }

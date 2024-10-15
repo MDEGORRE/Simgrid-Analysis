@@ -8,7 +8,7 @@ use Symfony\Component\Validator\Constraints\Regex;
 use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
-class QualificationGapAndRaceConsistency extends AbstractType
+class QualificationAndRace extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
