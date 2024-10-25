@@ -62,13 +62,24 @@ class HomeController extends AbstractController
             $race_id = explode('=', $url)[1];
             $championship_id = explode('/', $url)[4];
 
+            /*$processNumberOfRaces = new Process(["/usr/bin/python3", "../Simgrid-Race-Consistency/simgrid-number-of-races.py", 'argument' => $url]);
+            $processNumberOfRaces->run();
+                $numberOfRaces = json_decode($processNumberOfRaces->getOutput());
+                dump($numberOfRaces);
+                exit();
+            */
+
+            // some quali results might not be parsed if overall=true so needs to check when overall = false
             $processQuali = new Process(["/usr/bin/python3", "../Simgrid-Qualification-Times-Gap-in-Percent/simgrid-quali-gap.py", 
             'argument' => 'https://www.thesimgrid.com/championships/' . $championship_id . '/results?overall=true&race_id=' . $race_id . '&session_type=qualifying']);
             $processQuali->run();
             if (!$processQuali->isSuccessful()) {
-                throw new ProcessFailedException($processQuali);
+                $processQuali = new Process(["/usr/bin/python3", "../Simgrid-Qualification-Times-Gap-in-Percent/simgrid-quali-gap.py", 
+                'argument' => 'https://www.thesimgrid.com/championships/' . $championship_id . '/results?overall=false&race_id=' . $race_id . '&session_type=qualifying']);
+                $processQuali->run();
                 }
             $dataQuali = json_decode($processQuali->getOutput(), true);
+
 
             $processRace = new Process(["/usr/bin/python3", "../Simgrid-Race-Consistency/simgrid-race-consistency.py", 
             'argument' => 'https://www.thesimgrid.com/championships/' . $championship_id . '/results?overall=true&race_id=' . $race_id . '&result_type=laps&session_type=race_1']);
@@ -78,7 +89,7 @@ class HomeController extends AbstractController
                 }
             $dataRace = json_decode($processRace->getOutput(), true);
 
-            // check if a race 2 exists
+            // check if a race 2 happened -- need to find another solution for multiple races in an event
             $processRace2 = new Process(["/usr/bin/python3", "../Simgrid-Race-Consistency/simgrid-race-consistency.py", 
             'argument' => 'https://www.thesimgrid.com/championships/' . $championship_id . '/results?overall=true&race_id=' . $race_id . '&result_type=laps&session_type=race_2']);
             $processRace2->run();
@@ -103,6 +114,5 @@ class HomeController extends AbstractController
             'formForRaceConsistency' => $formForRaceConsistency,
             'formForQualiAndRace' => $formForQualiAndRace
         ]);
-
     }
 }
