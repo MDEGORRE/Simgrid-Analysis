@@ -80,7 +80,6 @@ class HomeController extends AbstractController
                 }
             $dataQuali = json_decode($processQuali->getOutput(), true);
 
-
             $processRace = new Process(["/usr/bin/python3", "../Simgrid-Race-Consistency/simgrid-race-consistency.py", 
             'argument' => 'https://www.thesimgrid.com/championships/' . $championship_id . '/results?overall=true&race_id=' . $race_id . '&result_type=laps&session_type=race_1']);
             $processRace->run();

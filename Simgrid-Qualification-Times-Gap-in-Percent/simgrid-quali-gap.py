@@ -16,7 +16,7 @@ def parseData():
     req = Request(url, headers={'User-Agent': 'Mozilla/5.0'})
     page = urlopen(req)
     html = page.read().decode("utf-8")
-    soup = BeautifulSoup(html, "html.parser")
+    soup = BeautifulSoup(html, "lxml")
 
     result_list = soup.find('table', class_='table-results')
     tbody = result_list.find('tbody')

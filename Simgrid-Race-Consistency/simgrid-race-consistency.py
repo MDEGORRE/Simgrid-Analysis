@@ -45,6 +45,7 @@ def parseData():
             racelaptimes['laptimes'].append(int(cell['data-milliseconds']))
             # Remove the first lap: this lap is usually slower than the average lap time and is not a good representation of driver speed.
         racelaptimes['laptimes'].pop(0)
+        racelaptimes['laptimes'] = list(filter(lambda laptime: laptime - racelaptimes['laptimes'][0] < 30000, racelaptimes['laptimes']))
         # if driver has only completed one lap, can not calculate consistency - empty array
         if len(racelaptimes['laptimes']) > 0:
             # Average lap time in milliseconds
